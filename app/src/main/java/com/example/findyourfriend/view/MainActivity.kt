@@ -51,6 +51,13 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
 
+                R.id.friendsFragment ->{
+                    navController.navigate(R.id.friendsFragment)
+                }
+                R.id.profileFragment ->{
+                    navController.navigate(R.id.profileFragment)
+                }
+
             }
             true
         }

@@ -8,11 +8,7 @@
         android:id="@+id/friendsFragment"
         android:name="com.example.findyourfriend.FriendsFragment"
         android:label="fragment_friends"
-        tools:layout="@layout/fragment_friends" >
-        <action
-            android:id="@+id/action_friendsFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_friends" />
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.findyourfriend.ProfileFragment"

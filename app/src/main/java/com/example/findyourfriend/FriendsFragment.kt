@@ -1,5 +1,6 @@
 package com.example.findyourfriend
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.findyourfriend.adapter.UserAdapter
 import com.example.findyourfriend.databinding.FragmentFriendsBinding
+import com.example.findyourfriend.view.MapsActivity
 import com.example.findyourfriend.viewmodel.AuthenticationViewModel
 import com.example.findyourfriend.viewmodel.FirestoreViewModel
 import com.example.findyourfriend.viewmodel.LocationViewModel
@@ -66,7 +68,7 @@ class FriendsFragment : Fragment() {
         }
         fetchUsers()
         binding.locationBtn.setOnClickListener {
-
+            startActivity(Intent(requireContext(),MapsActivity::class.java))
         }
 
         return binding.root

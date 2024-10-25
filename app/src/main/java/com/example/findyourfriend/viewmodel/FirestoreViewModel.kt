@@ -28,7 +28,8 @@ class FirestoreViewModel : ViewModel (){
             .addOnFailureListener { e ->
                 Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
             }
-        fun getAllUsers(context: Context,callback: (List<User>) -> Unit) {
+    }
+        fun getAllUsers(context: Context, callback: (List<User>) -> Unit) {
             usersCollection.get()
                 .addOnSuccessListener { result ->
                     val userList = mutableListOf<User>()
@@ -46,7 +47,7 @@ class FirestoreViewModel : ViewModel (){
                 }
         }
 
-    }
+
     fun updateUser(context: Context,userId: String, displayName: String, location: String) {
         val user = hashMapOf(
             "displayName" to displayName,

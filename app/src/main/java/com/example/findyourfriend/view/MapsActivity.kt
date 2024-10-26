@@ -14,6 +14,11 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.example.findyourfriend.databinding.ActivityMapsBinding
 import com.example.findyourfriend.viewmodel.FirestoreViewModel
 
+import android.location.Address
+import android.location.Geocoder
+import java.io.IOException
+import java.util.Locale
+
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
@@ -28,40 +33,62 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         firestoreViewModel = ViewModelProvider(this).get(FirestoreViewModel::class.java)
 
-
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-    }
 
+        binding.btnZoomIn.setOnClickListener {
+            mMap.animateCamera(CameraUpdateFactory.zoomIn())
+
+        }
+        binding.btnZoomOut.setOnClickListener {
+            mMap.animateCamera(CameraUpdateFactory.zoomOut())
+        }
+    }
 
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        firestoreViewModel.getAllUsers(this) { users ->
-            for (user in users) {
+        firestoreViewModel.getAllUsers(this) {
+            for (user in it) {
                 val userLocation = user.location
-                val latLng = if (userLocation.isEmpty() || userLocation == "Don't found any location yet" || userLocation == "Location not available") {
-                    LatLng(37.4220936, -122.0839) // Default location
-                } else {
-                    parseLocation(userLocation)
+                val latLng = parseLocation(userLocation)
+                if (userLocation.isEmpty()||userLocation == "Don't found any location yet"||userLocation == "Location not available"||userLocation == "Unknown Location") {
+                    LatLng(37.4220936, -122.083922)
                 }
-
-                // Add a marker at the determined location
                 val markerOptions = MarkerOptions().position(latLng).title(user.displayName)
                 googleMap.addMarker(markerOptions)
-            }
 
-            // Optionally, center the camera on the first marker or a default location
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(37.4220936, -122.0839), 10f))
+                val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
+                googleMap.animateCamera(cameraUpdate)
+            }
         }
     }
 
     private fun parseLocation(location: String): LatLng {
-        val latLngSplit = location.split(", ")
-        val latitude = latLngSplit[0].substringAfter("Lat: ").toDouble()
-        val longitude = latLngSplit[1].substringAfter("Long: ").toDouble()
-        return LatLng(latitude, longitude)
+        val coordinates = getLatLongFromLocationName(location)
+        if (coordinates != null) {
+            val latitude = coordinates.first
+            val longitude = coordinates.second
+            return LatLng(latitude, longitude)
+        } else {
+            return LatLng(37.4220936, -122.083922)
+        }
+
+    }
+
+    private fun getLatLongFromLocationName(locationName: String): Pair<Double, Double>? {
+        val geocoder = Geocoder(this, Locale.getDefault())
+        try {
+            val addressList: List<Address>? = geocoder.getFromLocationName(locationName, 1)
+            if (!addressList.isNullOrEmpty()) {
+                val address: Address = addressList[0]
+                return Pair(address.latitude, address.longitude)  // Return latitude and longitude as a Pair
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null  // Return null if no coordinates were found
     }
 }

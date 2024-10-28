@@ -37,7 +37,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
-
         mapFragment.getMapAsync(this)
     }
 
@@ -45,23 +44,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        firestoreViewModel.getAllUsers(this) {
-            for (user in it) {
+        firestoreViewModel.getAllUsers(this) { users ->
+            for (user in users) {
                 val userLocation = user.location
-                val latLng = parseLocation(userLocation)
                 if (userLocation.isEmpty() || userLocation == "Don't found any location yet" || userLocation == "Location not available") {
                     LatLng(37.4220936, -122.0839) // Default location
                 } else {
+                    val latLng = parseLocation(userLocation)
+                    // Add a marker at the determined location
                     val markerOptions = MarkerOptions().position(latLng).title(user.displayName)
                     googleMap.addMarker(markerOptions)
                 }
 
-                val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
-                googleMap.animateCamera(cameraUpdate)
-
 
             }
 
+            // Optionally, center the camera on the first marker or a default location
 
         }
     }
